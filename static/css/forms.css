@@ -1,0 +1,13 @@
+.page-card input:not([type="checkbox"]),
+.page-card select,
+.page-card textarea,
+.auth-wrap input:not([type="checkbox"]) {
+  display: block;
+  width: 100%;
+  padding: .72rem .85rem;
+  border: 1px solid #ccdadd;
+  border-radius: 10px;
+  background: #fff;
+}
+.page-card input[type="checkbox"] { width: 1.1rem; height: 1.1rem; }
+.page-card ul { padding-left: 1.2rem; color: #69808d; font-size: .82rem; }

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero"><div class="container py-5"><div class="row align-items-center g-5 py-lg-5">
+  <div class="col-lg-7"><span class="eyebrow">Healthcare that fits your day</span><h1 class="display-3 fw-bold mt-3">The right doctor,<br><span>right when you need one.</span></h1><p class="lead text-secondary my-4">Browse trusted specialists, choose a convenient slot, and manage your appointments from one calm, simple place.</p><div class="d-flex flex-wrap gap-3"><a class="btn btn-primary btn-lg" href="{% url 'doctor_list' %}">Find a doctor</a>{% if not user.is_authenticated %}<a class="btn btn-outline-primary btn-lg" href="{% url 'signup' %}">Join CarePoint</a>{% endif %}</div></div>
+  <div class="col-lg-5"><div class="hero-card"><div class="pulse">+</div><h3>Your health, organized.</h3><p class="text-secondary">Book in minutes. Track every visit. Get care without the phone-tag.</p><div class="mini-stat"><strong>3 simple steps</strong><span>Search · Select · Confirm</span></div></div></div>
+</div></div></section>
+<section class="container py-5"><div class="row g-4 text-center"><div class="col-md-4"><div class="feature-card"><div class="icon">⌕</div><h4>Discover specialists</h4><p>Search doctors by name or medical specialty.</p></div></div><div class="col-md-4"><div class="feature-card"><div class="icon">◷</div><h4>Choose your time</h4><p>Pick the date and time that works for you.</p></div></div><div class="col-md-4"><div class="feature-card"><div class="icon">✓</div><h4>Stay in control</h4><p>Review, update, or cancel from your dashboard.</p></div></div></div></section>
+{% endblock %}
