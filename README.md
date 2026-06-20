@@ -2,9 +2,9 @@
 
 A responsive Django application where patients discover doctors and book appointments, staff manage doctors and appointment statuses, and administrators manage users and roles.
 
-## Screenshots
-
 ## Live Website: https://doctor-appointment-system-p8mm.onrender.com/
+
+## Screenshots
 
 ![Preview](Preview1.png)
 
