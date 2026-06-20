@@ -2,6 +2,16 @@
 
 A responsive Django application where patients discover doctors and book appointments, staff manage doctors and appointment statuses, and administrators manage users and roles.
 
+## Screenshot
+
+![Preview](Preview1.png)
+![Preview](Preview2.png)
+![Preview](Preview3.png)
+![Preview](Preview4.png)
+![Preview](Preview5.png)
+![Preview](Preview6.png)
+
+
 ## Features
 
 - Signup, login, and logout with a custom Django user model
