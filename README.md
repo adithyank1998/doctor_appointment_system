@@ -4,14 +4,20 @@ A responsive Django application where patients discover doctors and book appoint
 
 ## Screenshots
 
+## Live Website: https://doctor-appointment-system-p8mm.onrender.com/
+
 ![Preview](Preview1.png)
+
 ![Preview](Preview2.png)
+
 ![Preview](Preview3.png)
+
 ![Preview](Preview4.png)
+
 ![Preview](Preview5.png)
+
 ![Preview](Preview6.png)
 
-## Live Website: https://doctor-appointment-system-p8mm.onrender.com/
 
 
 ## Features
