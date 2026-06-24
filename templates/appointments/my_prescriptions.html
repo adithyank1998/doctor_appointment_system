@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}My Prescriptions{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h4 class="mb-4">My Prescriptions</h4>
+  {% if prescriptions %}
+    {% for p in prescriptions %}
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between">
+        <strong>{{ p.doctor }}</strong>
+        <span class="text-muted small">{{ p.created_at|date:"d M Y" }}</span>
+      </div>
+      <div class="card-body">
+        <p><strong>Appointment Date:</strong> {{ p.appointment.appointment_date }}</p>
+        <p><strong>Medicines:</strong></p>
+        <p>{{ p.medicines|linebreaks }}</p>
+        {% if p.notes %}<p><strong>Notes:</strong> {{ p.notes }}</p>{% endif %}
+        {% if p.next_visit_date %}<p><strong>Next Visit:</strong> {{ p.next_visit_date }}</p>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted">No prescriptions yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
