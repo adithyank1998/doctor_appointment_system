@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Patient Detail{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h4 class="mb-1">{{ patient.get_full_name|default:patient.username }}</h4>
+  <p class="text-muted mb-4">{{ patient.email }}</p>
+
+  {% if profile %}
+  <div class="card mb-4">
+    <div class="card-header"><strong>Medical Profile</strong></div>
+    <div class="card-body row">
+      <div class="col-md-6">
+        <p><strong>Age:</strong> {{ profile.age|default:"—" }}</p>
+        <p><strong>Blood Group:</strong> {{ profile.blood_group|default:"—" }}</p>
+        <p><strong>Height:</strong> {{ profile.height_cm|default:"—" }} cm</p>
+        <p><strong>Weight:</strong> {{ profile.weight_kg|default:"—" }} kg</p>
+        <p><strong>Allergies:</strong> {{ profile.allergies|default:"—" }}</p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Medical History:</strong> {{ profile.medical_history|default:"—" }}</p>
+        <p><strong>Current Medications:</strong> {{ profile.current_medications|default:"—" }}</p>
+        <p><strong>Emergency Contact:</strong> {{ profile.emergency_contact_name|default:"—" }} {{ profile.emergency_contact_phone }}</p>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p class="text-muted">Patient has not filled their medical profile yet.</p>
+  {% endif %}
+
+  <div class="card mb-4">
+    <div class="card-header"><strong>Appointments</strong></div>
+    <div class="card-body">
+      {% if appointments %}
+      <table class="table table-sm">
+        <thead><tr><th>Doctor</th><th>Date</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for appt in appointments %}
+          <tr>
+            <td>{{ appt.doctor }}</td>
+            <td>{{ appt.appointment_date }}</td>
+            <td>{{ appt.status }}</td>
+            <td><a href="{% url 'appointment_detail' appt.pk %}" class="btn btn-sm btn-outline-primary">View</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="text-muted">No appointments found.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><strong>Prescriptions</strong></div>
+    <div class="card-body">
+      {% if prescriptions %}
+        {% for p in prescriptions %}
+        <div class="border rounded p-3 mb-2">
+          <p class="mb-1"><strong>{{ p.doctor }}</strong> — {{ p.created_at|date:"d M Y" }}</p>
+          <p class="mb-1">{{ p.medicines|linebreaks }}</p>
+          {% if p.notes %}<p class="text-muted small">{{ p.notes }}</p>{% endif %}
+        </div>
+        {% endfor %}
+      {% else %}
+      <p class="text-muted">No prescriptions yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
