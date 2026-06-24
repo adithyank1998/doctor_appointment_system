@@ -7,6 +7,7 @@ class User(AbstractUser):
         STAFF = 'STAFF', 'Staff'
         PATIENT = 'PATIENT', 'Patient'
         DOCTOR = 'DOCTOR', 'Doctor'
+
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.PATIENT)
     phone = models.CharField(max_length=20, blank=True)
 
