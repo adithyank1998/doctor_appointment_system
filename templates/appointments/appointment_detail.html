@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Appointment Detail{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <a href="{% url 'appointment_list' %}" class="btn btn-sm btn-outline-secondary mb-3">&larr; Back</a>
+
+  <div class="card mb-4">
+    <div class="card-header"><strong>Appointment Info</strong></div>
+    <div class="card-body">
+      <p><strong>Patient:</strong> {{ appointment.patient.get_full_name|default:appointment.patient.username }}</p>
+      <p><strong>Doctor:</strong> {{ appointment.doctor }}</p>
+      <p><strong>Date:</strong> {{ appointment.appointment_date }}</p>
+      <p><strong>Time:</strong> {{ appointment.appointment_time }}</p>
+      <p><strong>Reason:</strong> {{ appointment.reason }}</p>
+      <p><strong>Status:</strong>
+        <span class="badge 
+          {% if appointment.status == 'CONFIRMED' %}bg-success
+          {% elif appointment.status == 'PENDING' %}bg-warning text-dark
+          {% elif appointment.status == 'COMPLETED' %}bg-secondary
+          {% else %}bg-danger{% endif %}">
+          {{ appointment.status }}
+        </span>
+      </p>
+    </div>
+  </div>
+
+  {% if profile %}
+  <div class="card mb-4">
+    <div class="card-header"><strong>Patient Medical Profile</strong></div>
+    <div class="card-body row">
+      <div class="col-md-6">
+        <p><strong>Age:</strong> {{ profile.age|default:"—" }}</p>
+        <p><strong>Blood Group:</strong> {{ profile.blood_group|default:"—" }}</p>
+        <p><strong>Height:</strong> {{ profile.height_cm|default:"—" }} cm</p>
+        <p><strong>Weight:</strong> {{ profile.weight_kg|default:"—" }} kg</p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Medical History:</strong> {{ profile.medical_history|default:"—" }}</p>
+        <p><strong>Current Medications:</strong> {{ profile.current_medications|default:"—" }}</p>
+        <p><strong>Allergies:</strong> {{ profile.allergies|default:"—" }}</p>
+        <p><strong>Emergency Contact:</strong> {{ profile.emergency_contact_name|default:"—" }} {{ profile.emergency_contact_phone }}</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>Prescription</strong>
+      {% if user.is_doctor_role and not prescription %}
+        <a href="{% url 'prescription_create' appointment.pk %}" class="btn btn-sm btn-primary">Write Prescription</a>
+      {% elif user.is_doctor_role and prescription %}
+        <a href="{% url 'prescription_edit' prescription.pk %}" class="btn btn-sm btn-outline-primary">Edit Prescription</a>
+      {% endif %}
+    </div>
+    <div class="card-body">
+      {% if prescription %}
+        <p><strong>Medicines:</strong></p>
+        <p>{{ prescription.medicines|linebreaks }}</p>
+        <p><strong>Notes:</strong> {{ prescription.notes|default:"—" }}</p>
+        <p><strong>Next Visit:</strong> {{ prescription.next_visit_date|default:"—" }}</p>
+        <p class="text-muted small">Issued on {{ prescription.created_at|date:"d M Y" }}</p>
+      {% else %}
+        <p class="text-muted">No prescription issued yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
