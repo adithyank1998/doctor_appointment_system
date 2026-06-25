@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}User Detail{% endblock %}
+{% block content %}
+<div class="container py-5">
+
+  <a href="{% url 'user_list' %}" class="btn btn-sm btn-outline-secondary mb-4">&larr; Back to users</a>
+
+  <div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+      <span class="eyebrow">{{ patient.get_role_display }}</span>
+      <h1 class="mt-2">{{ patient.get_full_name|default:patient.username }}</h1>
+      <p class="text-muted">@{{ patient.username }} &middot; {{ patient.email }}</p>
+    </div>
+    <a href="{% url 'user_update' patient.pk %}" class="btn btn-outline-primary">Edit user</a>
+  </div>
+
+  <!-- Doctor profile -->
+  {% if doctor_profile %}
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>Doctor profile</strong>
+      <a href="{% url 'doctor_update' doctor_profile.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+    </div>
+    <div class="card-body row">
+      <div class="col-md-6">
+        <p><strong>Specialization:</strong> {{ doctor_profile.specialization }}</p>
+        <p><strong>Qualification:</strong> {{ doctor_profile.qualification|default:"—" }}</p>
+        <p><strong>Experience:</strong> {{ doctor_profile.experience_years }} years</p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Consultation fee:</strong> ₹{{ doctor_profile.consultation_fee }}</p>
+        <p><strong>Available:</strong> {% if doctor_profile.is_available %}Yes{% else %}No{% endif %}</p>
+        <p><strong>Bio:</strong> {{ doctor_profile.bio|default:"—" }}</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Patient medical profile -->
+  {% if profile %}
+  <div class="card mb-4">
+    <div class="card-header"><strong>Medical profile</strong></div>
+    <div class="card-body row">
+      <div class="col-md-6">
+        <p><strong>Age:</strong> {{ profile.age|default:"—" }}</p>
+        <p><strong>Blood group:</strong> {{ profile.blood_group|default:"—" }}</p>
+        <p><strong>Height:</strong> {{ profile.height_cm|default:"—" }} cm</p>
+        <p><strong>Weight:</strong> {{ profile.weight_kg|default:"—" }} kg</p>
+        <p><strong>Allergies:</strong> {{ profile.allergies|default:"—" }}</p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Medical history:</strong> {{ profile.medical_history|default:"—" }}</p>
+        <p><strong>Current medications:</strong> {{ profile.current_medications|default:"—" }}</p>
+        <p><strong>Emergency contact:</strong> {{ profile.emergency_contact_name|default:"—" }} {{ profile.emergency_contact_phone }}</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Appointments -->
+  {% if appointments %}
+  <div class="card mb-4">
+    <div class="card-header"><strong>Appointments</strong></div>
+    <div class="card-body p-0">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for appt in appointments %}
+          <tr>
+            <td>{{ appt.doctor }}</td>
+            <td>{{ appt.appointment_date }}</td>
+            <td>{{ appt.appointment_time }}</td>
+            <td><span class="status status-{{ appt.status|lower }}">{{ appt.status }}</span></td>
+            <td><a href="{% url 'appointment_detail' appt.pk %}" class="btn btn-sm btn-outline-secondary">View</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Prescriptions -->
+  {% if prescriptions %}
+  <div class="card">
+    <div class="card-header"><strong>Prescriptions</strong></div>
+    <div class="card-body">
+      {% for p in prescriptions %}
+      <div class="border rounded p-3 mb-2">
+        <div class="d-flex justify-content-between">
+          <strong>{{ p.doctor }}</strong>
+          <span class="text-muted small">{{ p.created_at|date:"d M Y" }}</span>
+        </div>
+        <p class="mt-2 mb-1">{{ p.medicines|linebreaks }}</p>
+        {% if p.notes %}<p class="text-muted small mb-0">{{ p.notes }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
