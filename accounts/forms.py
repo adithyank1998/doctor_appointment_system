@@ -15,3 +15,11 @@ class UserRoleForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email', 'phone', 'role', 'is_active')
+
+
+class AdminUserCreateForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'phone', 'role', 'password1', 'password2')
