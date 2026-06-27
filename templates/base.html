@@ -16,7 +16,9 @@
     <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse" id="nav">
       <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-        <a class="nav-link" href="{% url 'doctor_list' %}">Doctors</a>
+        {% if not user.is_doctor_role %}
+          <a class="nav-link" href="{% url 'doctor_list' %}">Doctors</a>
+        {% endif %}
         {% if user.is_authenticated %}
           <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
           {% if user.is_doctor_role %}
