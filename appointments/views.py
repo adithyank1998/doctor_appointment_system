@@ -113,80 +113,28 @@ def doctor_dashboard(request):
         messages.error(request, 'Access denied.')
         return redirect('dashboard')
     doctor = get_object_or_404(Doctor, user=request.user)
-    appointments = Appointment.objects.filter(doctor=doctor).select_related('patient')
+    appointments = Appointment.objects.filter(doctor=doctor).select_related('patient', 'patient__patient_profile')
+
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        appointments = appointments.filter(status=status_filter)
+
+    from django.db.models import Count
+    counts = Appointment.objects.filter(doctor=doctor).values('status').annotate(count=Count('id'))
+    status_counts = {item['status']: item['count'] for item in counts}
+
+    recent_prescriptions = Prescription.objects.filter(doctor=doctor).select_related('patient', 'appointment').order_by('-created_at')[:5]
+
     return render(request, 'appointments/doctor_dashboard.html', {
         'doctor': doctor,
         'appointments': appointments,
+        'status_filter': status_filter,
+        'total': sum(item['count'] for item in counts),
+        'pending': status_counts.get('PENDING', 0),
+        'confirmed': status_counts.get('CONFIRMED', 0),
+        'completed': status_counts.get('COMPLETED', 0),
+        'recent_prescriptions': recent_prescriptions,
     })
-
-
-@login_required
-def appointment_detail(request, pk):
-    appointment = get_object_or_404(Appointment, pk=pk)
-    # Only the patient, staff, or the assigned doctor can view
-    is_assigned_doctor = (
-        request.user.is_doctor_role and
-        hasattr(request.user, 'doctor_profile') and
-        request.user.doctor_profile == appointment.doctor
-    )
-    if not (appointment.patient == request.user or request.user.is_staff_role or is_assigned_doctor):
-        messages.error(request, 'Access denied.')
-        return redirect('appointment_list')
-    profile = PatientProfile.objects.filter(patient=appointment.patient).first()
-    prescription = Prescription.objects.filter(appointment=appointment).first()
-    return render(request, 'appointments/appointment_detail.html', {
-        'appointment': appointment,
-        'profile': profile,
-        'prescription': prescription,
-    })
-
-
-@login_required
-def prescription_create(request, appointment_pk):
-    appointment = get_object_or_404(Appointment, pk=appointment_pk)
-    # Only the assigned doctor can write a prescription
-    if not (request.user.is_doctor_role and
-            hasattr(request.user, 'doctor_profile') and
-            request.user.doctor_profile == appointment.doctor):
-        messages.error(request, 'Only the assigned doctor can write a prescription.')
-        return redirect('appointment_detail', pk=appointment_pk)
-    if hasattr(appointment, 'prescription'):
-        return redirect('prescription_edit', pk=appointment.prescription.pk)
-    form = PrescriptionForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        prescription = form.save(commit=False)
-        prescription.appointment = appointment
-        prescription.doctor = appointment.doctor
-        prescription.patient = appointment.patient
-        prescription.save()
-        appointment.status = Appointment.Status.COMPLETED
-        appointment.save()
-        messages.success(request, 'Prescription saved and sent to patient.')
-        return redirect('appointment_detail', pk=appointment_pk)
-    return render(request, 'form.html', {'form': form, 'title': 'Write prescription'})
-
-
-@login_required
-def prescription_edit(request, pk):
-    prescription = get_object_or_404(Prescription, pk=pk)
-    if not (request.user.is_doctor_role and
-            hasattr(request.user, 'doctor_profile') and
-            request.user.doctor_profile == prescription.doctor):
-        messages.error(request, 'Access denied.')
-        return redirect('doctor_dashboard')
-    form = PrescriptionForm(request.POST or None, instance=prescription)
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        messages.success(request, 'Prescription updated.')
-        return redirect('appointment_detail', pk=prescription.appointment.pk)
-    return render(request, 'form.html', {'form': form, 'title': 'Edit prescription'})
-
-
-@login_required
-def my_prescriptions(request):
-    prescriptions = Prescription.objects.filter(patient=request.user).select_related('doctor', 'appointment')
-    return render(request, 'appointments/my_prescriptions.html', {'prescriptions': prescriptions})
-
 
 # --- Patient Profile ---
 
