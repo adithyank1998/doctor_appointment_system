@@ -4,22 +4,20 @@
 <div class="container py-5">
 
   <!-- Header -->
-  <div class="d-flex flex-wrap justify-content-between align-items-start mb-4">
-    <div>
-      <span class="eyebrow">Doctor portal</span>
-      <h1 class="mt-2 mb-1">{{ doctor.name }}</h1>
-      <p class="text-muted mb-0">{{ doctor.specialization }} · {{ doctor.qualification }}</p>
-    </div>
-    <div class="d-flex gap-2 mt-3">
-      <a href="{% url 'doctor_profile_edit' %}" class="btn btn-outline-secondary btn-sm">Edit profile</a>
-      <a href="{% url 'doctor_availability' %}" class="btn btn-outline-secondary btn-sm">My timings</a>
-      {% if doctor.is_available %}
-        <span class="badge bg-success px-3 py-2 d-flex align-items-center">● On duty</span>
-      {% else %}
-        <span class="badge bg-secondary px-3 py-2 d-flex align-items-center">● Off duty</span>
-      {% endif %}
-    </div>
+<div class="d-flex flex-wrap justify-content-between align-items-start mb-4">
+  <div>
+    <span class="eyebrow">Doctor portal</span>
+    <h1 class="mt-2 mb-1">{{ doctor.name }}</h1>
+    <p class="text-muted mb-0">{{ doctor.specialization }} · {{ doctor.qualification }}</p>
   </div>
+  <div class="mt-3">
+    {% if doctor.is_available %}
+      <span class="badge bg-success px-3 py-2 d-flex align-items-center">● On duty</span>
+    {% else %}
+      <span class="badge bg-secondary px-3 py-2 d-flex align-items-center">● Off duty</span>
+    {% endif %}
+  </div>
+</div>
 
   <!-- Stat cards -->
   <div class="row g-3 mb-4">
