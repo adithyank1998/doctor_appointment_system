@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Edit My Profile{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="mb-4">
+    <span class="eyebrow">Doctor portal</span>
+    <h1 class="mt-2">Edit my profile</h1>
+  </div>
+  <div class="page-card" style="max-width: 700px;">
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors }}</div>{% endif %}
+      </div>
+      {% endfor %}
+      <div class="d-flex gap-3 mt-4">
+        <button type="submit" class="btn btn-primary px-4">Save changes</button>
+        <a href="{% url 'doctor_dashboard' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
