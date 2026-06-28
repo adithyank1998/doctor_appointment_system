@@ -25,6 +25,29 @@ class Doctor(models.Model):
     def __str__(self):
         return f'Dr. {self.name} - {self.specialization}'
 
+class DoctorAvailability(models.Model):
+    class Day(models.TextChoices):
+        MONDAY = 'MON', 'Monday'
+        TUESDAY = 'TUE', 'Tuesday'
+        WEDNESDAY = 'WED', 'Wednesday'
+        THURSDAY = 'THU', 'Thursday'
+        FRIDAY = 'FRI', 'Friday'
+        SATURDAY = 'SAT', 'Saturday'
+        SUNDAY = 'SUN', 'Sunday'
+
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='availability')
+    day = models.CharField(max_length=3, choices=Day.choices)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    class Meta:
+        ordering = ('day', 'start_time')
+        unique_together = ('doctor', 'day')
+
+    def __str__(self):
+        return f'{self.doctor.name} - {self.get_day_display()} {self.start_time} to {self.end_time}'
+    
+    
 
 class PatientProfile(models.Model):
     class BloodGroup(models.TextChoices):
