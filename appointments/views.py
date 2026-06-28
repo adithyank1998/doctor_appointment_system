@@ -244,3 +244,53 @@ def doctor_dashboard(request):
         'completed': status_counts.get('COMPLETED', 0),
         'recent_prescriptions': recent_prescriptions,
     })
+
+from .models import Appointment, Doctor, Prescription, PatientProfile, DoctorAvailability
+from .forms import AppointmentForm, AppointmentStatusForm, DoctorForm, PrescriptionForm, PatientProfileForm, DoctorProfileForm, DoctorAvailabilityForm
+
+
+@login_required
+def doctor_profile_edit(request):
+    if not request.user.is_doctor_role:
+        return redirect('dashboard')
+    doctor = get_object_or_404(Doctor, user=request.user)
+    form = DoctorProfileForm(request.POST or None, instance=doctor)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Profile updated.')
+        return redirect('doctor_dashboard')
+    return render(request, 'appointments/doctor_profile_edit.html', {'form': form, 'doctor': doctor})
+
+
+@login_required
+def doctor_availability(request):
+    if not request.user.is_doctor_role:
+        return redirect('dashboard')
+    doctor = get_object_or_404(Doctor, user=request.user)
+    availabilities = DoctorAvailability.objects.filter(doctor=doctor)
+    form = DoctorAvailabilityForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        availability = form.save(commit=False)
+        availability.doctor = doctor
+        try:
+            availability.save()
+            messages.success(request, 'Availability saved.')
+        except Exception:
+            messages.error(request, 'You already have a slot for that day. Delete it first to update.')
+        return redirect('doctor_availability')
+    return render(request, 'appointments/doctor_availability.html', {
+        'form': form,
+        'doctor': doctor,
+        'availabilities': availabilities,
+    })
+
+
+@login_required
+def doctor_availability_delete(request, pk):
+    if not request.user.is_doctor_role:
+        return redirect('dashboard')
+    availability = get_object_or_404(DoctorAvailability, pk=pk, doctor__user=request.user)
+    if request.method == 'POST':
+        availability.delete()
+        messages.success(request, 'Slot removed.')
+    return redirect('doctor_availability')

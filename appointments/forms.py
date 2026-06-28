@@ -63,3 +63,24 @@ class PatientProfileForm(forms.ModelForm):
             'current_medications': forms.Textarea(attrs={'rows': 2, 'placeholder': 'List any medications you are currently taking'}),
             'allergies': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Food, drug, or environmental allergies'}),
         }
+
+from .models import Appointment, Doctor, Prescription, PatientProfile, DoctorAvailability
+
+
+class DoctorProfileForm(forms.ModelForm):
+    class Meta:
+        model = Doctor
+        fields = ('name', 'specialization', 'qualification', 'experience_years', 'consultation_fee', 'bio', 'is_available')
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 4}),
+        }
+
+
+class DoctorAvailabilityForm(forms.ModelForm):
+    class Meta:
+        model = DoctorAvailability
+        fields = ('day', 'start_time', 'end_time')
+        widgets = {
+            'start_time': TimeInput(),
+            'end_time': TimeInput(),
+        }
