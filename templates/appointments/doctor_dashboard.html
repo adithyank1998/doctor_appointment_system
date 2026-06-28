@@ -4,52 +4,60 @@
 <div class="container py-5">
 
   <!-- Header -->
-  <div class="d-flex flex-wrap justify-content-between align-items-start mb-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-start mb-4">
     <div>
       <span class="eyebrow">Doctor portal</span>
       <h1 class="mt-2 mb-1">{{ doctor.name }}</h1>
       <p class="text-muted mb-0">{{ doctor.specialization }} · {{ doctor.qualification }}</p>
     </div>
-    <div class="text-end mt-2">
-      <span class="badge bg-success px-3 py-2">● On duty</span>
+    <div class="d-flex gap-2 mt-3">
+      <a href="{% url 'doctor_profile_edit' %}" class="btn btn-outline-secondary btn-sm">Edit profile</a>
+      <a href="{% url 'doctor_availability' %}" class="btn btn-outline-secondary btn-sm">My timings</a>
+      {% if doctor.is_available %}
+        <span class="badge bg-success px-3 py-2 d-flex align-items-center">● On duty</span>
+      {% else %}
+        <span class="badge bg-secondary px-3 py-2 d-flex align-items-center">● Off duty</span>
+      {% endif %}
     </div>
   </div>
 
   <!-- Stat cards -->
-<div class="row g-3 mb-5">
-  <div class="col-6 col-lg-3">
-    <div class="stat-card">
-      <span>Total appointments</span>
-      <strong>{{ total }}</strong>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <span>Total appointments</span>
+        <strong>{{ total }}</strong>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <span>Pending</span>
+        <strong>{{ pending }}</strong>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <span>Confirmed</span>
+        <strong>{{ confirmed }}</strong>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <span>Completed</span>
+        <strong>{{ completed }}</strong>
+      </div>
     </div>
   </div>
-  <div class="col-6 col-lg-3">
-    <div class="stat-card">
-      <span>Pending</span>
-      <strong>{{ pending }}</strong>
-    </div>
-  </div>
-  <div class="col-6 col-lg-3">
-    <div class="stat-card">
-      <span>Confirmed</span>
-      <strong>{{ confirmed }}</strong>
-    </div>
-  </div>
-  <div class="col-6 col-lg-3">
-    <div class="stat-card">
-      <span>Completed</span>
-      <strong>{{ completed }}</strong>
-    </div>
-  </div>
-</div>
+
+  <!-- Main content -->
+  <div class="row g-4">
 
     <!-- Appointments table -->
     <div class="col-lg-8">
       <div class="page-card">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h5 class="mb-0">Your appointments</h5>
-          <!-- Filter tabs -->
-          <div class="d-flex gap-2">
+          <div class="d-flex gap-2 flex-wrap">
             <a href="?" class="btn btn-sm {% if not status_filter %}btn-primary{% else %}btn-outline-secondary{% endif %}">All</a>
             <a href="?status=PENDING" class="btn btn-sm {% if status_filter == 'PENDING' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Pending</a>
             <a href="?status=CONFIRMED" class="btn btn-sm {% if status_filter == 'CONFIRMED' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Confirmed</a>
@@ -75,18 +83,17 @@
                 <td>
                   <strong>{{ appt.patient.get_full_name|default:appt.patient.username }}</strong>
                   {% if appt.patient.patient_profile %}
-                  <br><small class="text-muted">{{ appt.patient.patient_profile.blood_group|default:"" }} {% if appt.patient.patient_profile.age %}· {{ appt.patient.patient_profile.age }} yrs{% endif %}</small>
+                  <br><small class="text-muted">
+                    {{ appt.patient.patient_profile.blood_group|default:"" }}
+                    {% if appt.patient.patient_profile.age %} · {{ appt.patient.patient_profile.age }} yrs{% endif %}
+                  </small>
                   {% endif %}
                 </td>
                 <td>{{ appt.appointment_date|date:"d M Y" }}</td>
                 <td>{{ appt.appointment_time|time:"g:i A" }}</td>
                 <td>{{ appt.reason|truncatewords:6 }}</td>
-                <td>
-                  <span class="status status-{{ appt.status|lower }}">{{ appt.get_status_display }}</span>
-                </td>
-                <td>
-                  <a href="{% url 'appointment_detail' appt.pk %}" class="btn btn-sm btn-outline-primary">View</a>
-                </td>
+                <td><span class="status status-{{ appt.status|lower }}">{{ appt.get_status_display }}</span></td>
+                <td><a href="{% url 'appointment_detail' appt.pk %}" class="btn btn-sm btn-outline-primary">View</a></td>
               </tr>
               {% endfor %}
             </tbody>
@@ -99,41 +106,73 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="col-lg-4">
+    <div class="col-lg-4 d-flex flex-column gap-4">
 
-      <!-- Doctor profile card -->
-      <div class="page-card mb-4">
-        <h6 class="mb-3">My profile</h6>
-        <p class="mb-2"><strong>Experience:</strong> {{ doctor.experience_years }} years</p>
-        <p class="mb-2"><strong>Consultation fee:</strong> ₹{{ doctor.consultation_fee }}</p>
-        <p class="mb-3"><strong>Status:</strong>
+      <!-- Profile summary -->
+      <div class="page-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0">My profile</h6>
+          <a href="{% url 'doctor_profile_edit' %}" class="btn btn-sm btn-outline-primary">Edit</a>
+        </div>
+        <div class="mb-2 d-flex justify-content-between">
+          <span class="text-muted small">Experience</span>
+          <span class="small fw-semibold">{{ doctor.experience_years }} years</span>
+        </div>
+        <div class="mb-2 d-flex justify-content-between">
+          <span class="text-muted small">Consultation fee</span>
+          <span class="small fw-semibold">₹{{ doctor.consultation_fee }}</span>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+          <span class="text-muted small">Status</span>
           {% if doctor.is_available %}
-            <span class="text-success">Available</span>
+            <span class="small text-success fw-semibold">Available</span>
           {% else %}
-            <span class="text-danger">Unavailable</span>
+            <span class="small text-danger fw-semibold">Unavailable</span>
           {% endif %}
-        </p>
+        </div>
         {% if doctor.bio %}
-        <p class="text-muted small mb-0">{{ doctor.bio }}</p>
+        <p class="text-muted small mb-0 border-top pt-3">{{ doctor.bio|truncatewords:30 }}</p>
         {% endif %}
       </div>
 
       <!-- Recent prescriptions -->
       <div class="page-card">
-        <h6 class="mb-3">Recent prescriptions</h6>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0">Recent prescriptions</h6>
+        </div>
         {% if recent_prescriptions %}
           {% for p in recent_prescriptions %}
           <div class="appointment-row">
             <div>
-              <strong>{{ p.patient.get_full_name|default:p.patient.username }}</strong>
+              <strong class="small">{{ p.patient.get_full_name|default:p.patient.username }}</strong>
               <small>{{ p.created_at|date:"d M Y" }}</small>
             </div>
             <a href="{% url 'appointment_detail' p.appointment.pk %}" class="btn btn-sm btn-outline-secondary">View</a>
           </div>
           {% endfor %}
         {% else %}
-          <p class="text-muted small">No prescriptions written yet.</p>
+          <p class="text-muted small mb-0">No prescriptions written yet.</p>
         {% endif %}
+      </div>
+
+      <!-- My timings -->
+      <div class="page-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0">My timings</h6>
+          <a href="{% url 'doctor_availability' %}" class="btn btn-sm btn-outline-primary">Manage</a>
+        </div>
+        {% with availabilities=doctor.availability.all %}
+        {% if availabilities %}
+          {% for slot in availabilities %}
+          <div class="appointment-row">
+            <span class="small fw-semibold">{{ slot.get_day_display }}</span>
+            <span class="small text-muted">{{ slot.start_time|time:"g:i A" }} – {{ slot.end_time|time:"g:i A" }}</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted small mb-0">No timings set. <a href="{% url 'doctor_availability' %}">Add now</a></p>
+        {% endif %}
+        {% endwith %}
       </div>
 
     </div>
